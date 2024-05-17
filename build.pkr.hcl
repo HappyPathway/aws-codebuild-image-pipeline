@@ -7,6 +7,14 @@ packer {
   }
 }
 
+variable login_password {
+  type = string
+}
+
+variable login_username {
+  type = string
+}
+
 variable "packer_version" {
   type        = string
   description = "Terraform CLI Version"
@@ -48,6 +56,9 @@ build {
   }
   post-processors {
     post-processor "docker-tag" {
+        login_username = var.login_username
+        login_password = var.login_password
+        login = true
         repository =  "HappyPathway/aws-codebuild-image-pipeline"
         tag = "latest"
       }
