@@ -1,0 +1,39 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Packer Build
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      - name: Setup HashiCorp Packer
+        # You may pin to the exact commit or the version.
+        # uses: hashicorp/setup-packer@1aa358be5cf73883762b302a3a03abd66e75b232
+        uses: hashicorp/setup-packer@v3.1.0
+
+      - name: Docker Login
+        # You may pin to the exact commit or the version.
+        # uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20
+        uses: docker/login-action@v3.1.0
+        with:
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          logout: true
+          
+      # Runs a single command using the runners shell
+      - name: packer build
+        run: packer build build.pkr.hcl
