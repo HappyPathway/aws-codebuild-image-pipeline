@@ -48,7 +48,7 @@ build {
   }
   post-processors {
     post-processor "docker-tag" {
-        repository =  "HappyPathway/aws-codebuild-image-pipeline"
+        repository =  "happypathway/aws-codebuild-image-pipeline"
         tag = [
           "latest"
         ]
