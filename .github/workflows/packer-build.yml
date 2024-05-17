@@ -36,4 +36,6 @@ jobs:
           
       # Runs a single command using the runners shell
       - name: packer build
-        run: packer build build.pkr.hcl
+        run: |
+          packer init build.pkr.hcl
+          packer build build.pkr.hcl
