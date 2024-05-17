@@ -56,13 +56,14 @@ build {
   }
   post-processors {
     post-processor "docker-tag" {
+        repository =  "happypathway/aws-codebuild-image-pipeline"
+        tag = "latest"
+      }
+    post-processor "docker-push" {
         login_username = var.login_username
         login_password = var.login_password
         login = true
-        repository =  "HappyPathway/aws-codebuild-image-pipeline"
-        tag = "latest"
       }
-    post-processor "docker-push" {}
   }
 }
 
