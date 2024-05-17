@@ -42,3 +42,4 @@ jobs:
           -var login_username=${{ vars.DOCKERHUB_USER }} \
           -var login_password=${{ secrets.DOCKERHUB_TOKEN }} \
           build.pkr.hcl
+
