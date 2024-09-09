@@ -15,60 +15,48 @@ variable login_username {
   type = string
 }
 
-variable repo {
-  type = string
+variable "packer_version" {
+  type        = string
+  description = "Terraform CLI Version"
+  default     = "1.10.3"
 }
 
-variable docker_hub_org {
-  type = string
-  default = "happypathway"
+variable "mitogen_version" {
+  type        = string
+  description = "Mitogen Version"
+  default     = "0.3.7"
 }
 
-variable source_image {
-  type = string
-  default = "ubuntu:latest"
-} 
-
-variable file_template {
-  type = string
-  default = "buildscript.sh.tpl"
-}
-
-variable vars_file {
-  type = string
-  default = "vars.json"
-}
-
-source "docker" "image" {
-  image  = var.source_image
+source "docker" "ubuntu" {
+  image  = "ubuntu:jammy"
   commit = true
 }
 
-
 build {
-  name    = var.repo
+  name    = "aws-image-pipeline"
   sources = [
-    "source.docker.image"
+    "source.docker.ubuntu"
   ]
-  provisioner "file" {
-    content = templatefile(
-      var.file_template,
-      jsondecode(file(var.vars_file))
-    )
-    destination = "/tmp/buildscript"
-  }
-
-  provisioner shell {
+  provisioner "shell" {
     inline = [
-      "chmod +x /tmp/buildscript",
-      "/tmp/buildscript",
-      "rm /tmp/buildscript"
+      "apt-get update",
+      "apt-get install -y ansible awscli curl unzip",
+      "curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py",
+      "python3 get-pip.py --user",
+      "curl -s -qL -o packer.zip https://releases.hashicorp.com/packer/${var.packer_version}/packer_${var.packer_version}_linux_amd64.zip",
+      "unzip -o packer.zip",
+      "mv packer /bin",
+      "rm packer.zip",
+      "curl -s -qL -o mitogen.tar.gz https://files.pythonhosted.org/packages/source/m/mitogen/mitogen-${var.mitogen_version}.tar.gz",
+      "mv mitogen.tar.gz /opt; cd /opt; tar vxzf mitogen.tar.gz",
+    ]
+    environment_vars = [
+      "DEBIAN_FRONTEND=noninteractive",
     ]
   }
-
   post-processors {
     post-processor "docker-tag" {
-        repository =  "${var.docker_hub_org}/${var.repo}"
+        repository =  "happypathway/aws-codebuild-image-pipeline"
         tag = ["latest"]
       }
     post-processor "docker-push" {

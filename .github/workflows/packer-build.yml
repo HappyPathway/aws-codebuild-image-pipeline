@@ -34,14 +34,6 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           logout: true
           
-      - name: packer validate
-        run: |
-          packer validate \
-          -var login_username=${{ vars.DOCKERHUB_USER }} \
-          -var login_password=${{ secrets.DOCKERHUB_TOKEN }} \
-          -var repo=dockerhub-workspace \
-          build.pkr.hcl
-
       # Runs a single command using the runners shell
       - name: packer build
         run: |
@@ -50,4 +42,3 @@ jobs:
           -var login_username=${{ vars.DOCKERHUB_USER }} \
           -var login_password=${{ secrets.DOCKERHUB_TOKEN }} \
           build.pkr.hcl
-
