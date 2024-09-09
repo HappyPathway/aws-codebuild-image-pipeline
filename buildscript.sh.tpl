@@ -1,0 +1,1 @@
+echo ${docker_vars}
